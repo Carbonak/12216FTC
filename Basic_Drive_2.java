@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -45,6 +46,7 @@ public class Basic_Drive_2 extends OpMode {
     private DcMotor frontLeft = null;
     private DcMotor backRight = null;
     private DcMotor backLeft = null;
+    private Servo attatch = null;
     /*
     private Servo dropper = null;
     private CRServo turn_table = null;
@@ -64,18 +66,7 @@ public class Basic_Drive_2 extends OpMode {
         frontLeft = hardwareMap.get(DcMotor.class,  "FL");
         backRight = hardwareMap.get(DcMotor.class, "BR");
         backLeft = hardwareMap.get(DcMotor.class, "BL");
-        /*dropper = hardwareMap.get(Servo.class, "dropper");
-        turn_table = hardwareMap.get(CRServo.class, "turn_table");
-        extension_arm = hardwareMap.get(CRServo.class, "extension_arm");
-        door = hardwareMap.get(Servo.class, "door");
-        light = hardwareMap.get(Servo.class, "light");
-        wall = hardwareMap.get(TouchSensor.class, "wall"); */
-        /*
-        // Set the motor direction
-        right.setDirection(DcMotor.Direction.FORWARD);
-        left.setDirection(DcMotor.Direction.REVERSE);
-        climb.setDirection(DcMotor.Direction.REVERSE);
-        // Tell the driver that initialization is complete*/
+        attatch = hardwareMap.get(Servo.class, "AT");
         telemetry.addData("Status", "Initialized");
     }
 
@@ -83,7 +74,8 @@ public class Basic_Drive_2 extends OpMode {
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
     @Override
-    public void init_loop() {
+    public void init_loop()
+    {
 
     }
 
@@ -97,7 +89,9 @@ public class Basic_Drive_2 extends OpMode {
 
 
     @Override
-    public void stop() {
+    public void stop()
+    {
+
     }
 
     /*
@@ -113,139 +107,37 @@ public class Basic_Drive_2 extends OpMode {
         double backRightPower = 0;
         double backLeftPower = 0;
 
+
         telemetry.addData("x", "%.2f", -gamepad1.right_stick_x);
         telemetry.addData("y", "%.2f", -gamepad1.right_stick_y);
-        //omnidirectional movement (experimental)
-        if (gamepad1.right_stick_y > .2)
-        {
-            frontRightPower = 1;
-            frontLeftPower = 1;
-            backRightPower = 1;
-            backLeftPower = 1;
-        } else if (gamepad1.right_stick_y > -.2)
-        {
-            frontRightPower = -1;
-            frontLeftPower = -1;
-            backRightPower = -1;
-            backLeftPower = -1;
-        } else if (gamepad1.right_stick_x > .2)
-        {
-            frontRightPower = -1;
-            frontLeftPower = 1;
-            backRightPower = 1;
-            backLeftPower = -1;
-        } else if (gamepad1.right_stick_x > -.2)
-        {
-            frontRightPower = 1;
-            frontLeftPower = -1;
-            backRightPower = -1;
-            backLeftPower = 1;
-        } else if (gamepad1.right_stick_y > .2 && gamepad1.right_stick_x > .2 )
-        {
-            //frontRightPower = 1;
-            frontLeftPower = 1;
-            backRightPower = 1;
-            //backLeftPower = 1;
-        } else if (gamepad1.right_stick_y > -.2 && gamepad1.right_stick_x > -.2)
-        {
-            //frontRightPower = -1;
-            frontLeftPower = -1;
-            backRightPower = -1;
-            //backLeftPower = -1;
-        } else if (gamepad1.right_stick_y > .2 && gamepad1.right_stick_x > -.2)
-        {
-            frontRightPower = 1;
-            //frontLeftPower = 1;
-            //backRightPower = 1;
-            backLeftPower = 1;
-        } else if (gamepad1.right_stick_y > -.2 && gamepad1.right_stick_x > .2)
-        {
-            frontRightPower = -1;
-            //frontLeftPower = 1;
-            //backRightPower = 1;
-            backLeftPower = -1;
-        }
 
-        //Button a will slow everymotor on gamepad1 to half top speed in order to increase control.
-        if (speedFactor == 1 && gamepad1.a) {
-            speedFactor = 0.5;
+        frontRightPower = gamepad1.right_stick_y;
+        frontLeftPower = -gamepad1.right_stick_y;
+        backLeftPower = -gamepad1.right_stick_y;
+        backRightPower = gamepad1.right_stick_y;
+
+        frontRightPower += gamepad1.right_stick_x;
+        frontLeftPower += gamepad1.right_stick_x;
+        backLeftPower += -gamepad1.right_stick_x;
+        backRightPower += -gamepad1.right_stick_x;
+
+        frontRightPower += -gamepad1.left_stick_x;
+        frontLeftPower += -gamepad1.left_stick_x;
+        backLeftPower += -gamepad1.left_stick_x;
+        backRightPower += -gamepad1.left_stick_x;
+
+        if(gamepad1.a) {
+            attatch.setPosition(1);
         } else if (gamepad1.b) {
-            speedFactor = 1;
+            attatch.setPosition(0.2);
         }
 
-        if (speedFactor > 1) {
-            speedFactor = 1;
-        }
-/*
-        if(wall.isPressed()){
-            rightPower = 1;
-            leftPower = 1;
-            telemetry.addData("sensor", "touched");
-        } else{
-            leftPower = 0;
-            rightPower = 0;
-        }
-*/
-        //Set the  controls for omnidirectional steering on right stick
-        //frontRightPower += gamepad1.right_stick_y;
-        //frontLeftPower += gamepad1.right_stick_y;
-        //backLeftPower += -gamepad1.right_stick_y;
-        //backLeftPower += -gamepad1.right_stick_y;
-
-/*        //Right bumper and trigger control the up and down of the climb arm.
-        if (gamepad1.right_bumper) {
-            climbPower += 1;
-        } else if (gamepad1.right_trigger > 0) {
-            climbPower = -gamepad1.right_trigger;
-        }else {
-            climbPower = 0;
-        }
-
-        //x and y controller the servo to drop the team marker
-        if (gamepad1.x) {
-            dropper.setPosition(0.5);
-        } else if (gamepad1.y) {
-            dropper.setPosition(1);
-        }
-
-
-        //rotate the turn table
-        turn_table.setPower(-gamepad2.right_stick_x/2);
-
-
-        //extend the arm
-        extension_arm.setPower(-gamepad2.left_stick_y/2);
-
-        //lift the arm
-        if (gamepad2.left_bumper){
-            lift.setPower(0.7);
-        } else if (gamepad2.left_trigger > 0){
-            lift.setPower(gamepad2.left_trigger * -0.5);
-        }else{
-            lift.setPower(0);
-        }
-
-
-        //open/close door
-        if(gamepad2.right_stick_button || (gamepad2.right_trigger > 0 ) || gamepad1.dpad_left) {
-            door.setPosition(0.3);
-        } else{
-            door.setPosition(0.5);
-        }
-
-        //Turn the light on and off
-        if(gamepad1.right_stick_button && gamepad1.left_stick_button){
-            light.setPosition(0.7);
-        } else if (gamepad1.right_stick_button || gamepad1.left_stick_button){
-            light.setPosition(0);
-        }
-*/
 
         // Send calculated power to motors
-        //frontRightPower.setPower(frontRightPower * speedFactor);
-        //frontLeftPower.setPower(backRightPower * speedFactor);
-        //backRightPower.setPower(backRightPower * speedFactor);
-        //backLeftPower.setPower(backLeftPower * speedFactor);
+        frontRight.setPower(frontRightPower);
+        frontLeft.setPower(frontLeftPower);
+        backRight.setPower(backRightPower);
+        backLeft.setPower(backLeftPower );
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
