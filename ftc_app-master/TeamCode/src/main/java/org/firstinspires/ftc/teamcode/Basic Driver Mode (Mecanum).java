@@ -1,6 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- */
+// Copyright (c) 2017 FIRST. All rights reserved.
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
@@ -11,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@TeleOp(name="Basic Drive Mode", group="Iterative Opmode")
 @Disabled
 public class BasicOpMode_Iterative extends OpMode
 {
@@ -26,12 +24,12 @@ public class BasicOpMode_Iterative extends OpMode
         telemetry.addData("Status", "Initialized");
 
         // Initialize the hardware variables.
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        hubOneMotorOne = hardwareMap.get(DcMotor.class, "hubOneMotorOne");
+        hubOneMotorTwo = hardwareMap.get(DcMotor.class, "hubOneMotorTwo");
+        hubOneMotorThree = hardwareMap.get(DcMotor.class, "hubOneMotorThree");
+        hubOneMotorFour = hardwareMap.get(DcMotor.class, "hubOneMotorFour");
 
         // Make sure motors are going in the right diretion
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
